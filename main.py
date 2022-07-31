@@ -10,22 +10,32 @@ def category_counter(month: int, year: int, write_exel: bool = False):
     book = openpyxl.open("test.xlsx", read_only=True)
     daily_expenses = book.worksheets[0]  # позиционирование на листе
     # all_category = {'Продукты':{},'Транспорт':{}}
-    all_category = {'Алкоголь': {}, 'еда': {}, 'Здоровье, красота, гигиена': {}, 'инвестиции': {}, 'Квартира': {},
+    all_category = {'Транспорт': {},
+                    'Еда': {},
+                    'Здоровье, Красота, Гигиена': {},
+                    'Инвестиции': {},
+                    'Квартира': {},
                     'Продукты': {},
-                    'прочее': {}, 'Рестораны': {}, 'Связь': {}, 'Транспорт': {}, 'Одежда': {},
+                    'Прочее': {},
+                    'Рестораны': {},
+                    'Связь': {},
+                    'Алкоголь': {},
+                    'Кино, театры, музеи': {},
+                    'Одежда': {},
                     'Творчество, книги, обучение': {}}
     border_of_month = find_border_of_month(month, year, daily_expenses)
     for row in range(border_of_month[0], border_of_month[1] + 1):
-        category = daily_expenses[row][4].value
+        category = daily_expenses[row][4].value.title()
+        #_category = daily_expenses[row][5].value.lower()
         _category = daily_expenses[row][5].value
         if _category is None and all_category[category] == {}:
             all_category[category].setdefault('noncategory', daily_expenses[row][6].value)
         elif _category is None and all_category[category] != {}:
             all_category[category]['noncategory'] = daily_expenses[row][6].value + all_category[category]['noncategory']
-        elif _category in all_category[category].keys():
-            all_category[category][_category] = all_category[category][_category] + daily_expenses[row][6].value
+        elif _category.lower() in all_category[category].keys():
+            all_category[category][_category.lower()] = all_category[category][_category.lower()] + daily_expenses[row][6].value
         else:
-            all_category[category].setdefault(_category, daily_expenses[row][6].value)
+            all_category[category].setdefault(_category.lower(), daily_expenses[row][6].value)
     book.close()
     if write_exel:
         write_category(month, year, all_category)
@@ -64,27 +74,31 @@ def write_category(month: int, year: int, all_category):
     for column in range(begin_category_list_col + 2, list2.max_column):
         if list2[2][column].value.month == month and list2[2][column].value.year == year:
             number_of_column = column - begin_category_list_col
-    row = 2
+    #row = 2
+    row = 3
     while row <= list2.max_row + 1 or len(all_category) != 0:
+        print(row)
         for category in all_category.keys():
-            if list2[row][begin_category_list_col].value == category:
+            leven_length = levenstein(list2[row][begin_category_list_col].value, category)
+            if leven_length == 0 or leven_length == 1:
                 list2[row][begin_category_list_col + number_of_column].value = sum(all_category[category].values())
                 position = 0
                 while len(all_category[category]) != 0:
-                    if list2[row + 1][begin_category_list_col + 1].value == list(all_category[category].keys())[
-                        position] and \
+                    leven_length_ = levenstein(list2[row + 1][begin_category_list_col + 1].value,
+                                               list(all_category[category].keys())[position])
+                    if leven_length_ == 0 or leven_length_ ==1 and \
                             position <= len(all_category[category]):
                         list2[row + 1][begin_category_list_col + number_of_column].value = all_category[category][
                             list(all_category[category].keys())[position]]
                         all_category[category].pop(list(all_category[category].keys())[position])
                         row += 1
                         position = 0
-                    elif list2[row + 1][begin_category_list_col + 1].value == None and \
+                    elif leven_length_ == None and \
                             list(all_category[category].keys())[position] == 'noncategory':
                         list2[row + 1][begin_category_list_col + number_of_column].value = all_category[category][
                             list(all_category[category].keys())[position]]
                         all_category[category].pop(list(all_category[category].keys())[position])
-                        row += 1
+                        row += 2
                         position = 0
                     elif position + 1 == len(all_category[category]):
                         list2[row + 1][begin_category_list_col + number_of_column].value = 0
@@ -102,8 +116,23 @@ def write_category(month: int, year: int, all_category):
 
 
 def levenstein(A, B):
-    pass
+    if A == None:
+        return None
+    F = [[(i + j) if i * j == 0 else 0 for j in range(len(B) + 1)]
+         for i in range(len(A) + 1)]
+    for i in range(1, len(A) + 1):
+        for j in range(1, len(B) + 1):
+            if A[i - 1] == B[j - 1]:
+                F[i][j] = F[i - 1][j - 1]
+            else:
+                F[i][j] = 1 + min(F[i - 1][j], F[i][j - 1], F[i - 1][j - 1])
+    return F[len(A)][len(B)]
 
 
-category_counter(4, 2022, True)
+
+
+#print(levenstein('Жкх', 'жкх'))
+
+
+category_counter(3, 2022, True)
 
