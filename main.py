@@ -10,22 +10,22 @@ def category_counter(month: int, year: int, write_exel: bool = False):
     book = openpyxl.open("test.xlsx", read_only=True)
     daily_expenses = book.worksheets[0]  # позиционирование на листе
     # all_category = {'Продукты':{},'Транспорт':{}}
-    all_category = {'Транспорт': {},
-                    'Еда': {},
-                    'Здоровье, Красота, Гигиена': {},
-                    'Инвестиции': {},
-                    'Квартира': {},
-                    'Продукты': {},
-                    'Прочее': {},
-                    'Рестораны': {},
-                    'Связь': {},
-                    'Алкоголь': {},
-                    'Кино, театры, музеи': {},
-                    'Одежда': {},
-                    'Творчество, книги, обучение': {}}
+    all_category = {'транспорт': {},
+                    'еда': {},
+                    'здоровье, красота, гигиена': {},
+                    'инвестиции': {},
+                    'квартира': {},
+                    'продукты': {},
+                    'прочее': {},
+                    'рестораны': {},
+                    'связь': {},
+                    'алкоголь': {},
+                    'кино, театры, музеи': {},
+                    'одежда': {},
+                    'творчество, книги, обучение': {}}
     border_of_month = find_border_of_month(month, year, daily_expenses)
     for row in range(border_of_month[0], border_of_month[1] + 1):
-        category = daily_expenses[row][4].value.title()
+        category = daily_expenses[row][4].value.lower()
         #_category = daily_expenses[row][5].value.lower()
         _category = daily_expenses[row][5].value
         if _category is None and all_category[category] == {}:
@@ -50,6 +50,7 @@ def find_border_of_month(month: int, year: int, exel_list):
     """
     data_stack = []
     for row in range(2, exel_list.max_row + 1):
+        print(row)
         if exel_list[row][2].value == None or exel_list[row][2].value == None:
             return data_stack
         elif exel_list[row][2].value.month == month and exel_list[row][2].value.year == year:
@@ -98,7 +99,7 @@ def write_category(month: int, year: int, all_category):
                         list2[row + 1][begin_category_list_col + number_of_column].value = all_category[category][
                             list(all_category[category].keys())[position]]
                         all_category[category].pop(list(all_category[category].keys())[position])
-                        row += 2
+                        row += 1
                         position = 0
                     elif position + 1 == len(all_category[category]):
                         list2[row + 1][begin_category_list_col + number_of_column].value = 0
@@ -134,5 +135,5 @@ def levenstein(A, B):
 #print(levenstein('Жкх', 'жкх'))
 
 
-category_counter(3, 2022, True)
+category_counter(6, 2022, True)
 
