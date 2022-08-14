@@ -7,7 +7,7 @@ def category_counter(month: int, year: int, write_exel: bool = False):
     :param year: год, для которого надо произвести расчёты
     :return: словарь категорий, подкатегорий и сумм
     """
-    book = openpyxl.open("test.xlsx", read_only=True)
+    book = openpyxl.open("C:/Users/apec9/Dropbox/ExelExpenses/test.xlsx", read_only=True)
     daily_expenses = book.worksheets[0]  # позиционирование на листе
     # all_category = {'Продукты':{},'Транспорт':{}}
     all_category = {'транспорт': {},
@@ -48,18 +48,36 @@ def find_border_of_month(month: int, year: int, exel_list):
     :param year: год месяца, для которого надо найти границы
     :return: возвращает list с двумя числами: начало месяца в строке, конец месяца в строке
     """
-    data_stack = []
-    for row in range(2, exel_list.max_row + 1):
-        print(row)
-        if exel_list[row][2].value == None or exel_list[row][2].value == None:
-            return data_stack
-        elif exel_list[row][2].value.month == month and exel_list[row][2].value.year == year:
-            if len(data_stack) == 0 or len(data_stack) == 1:
-                data_stack.append(row)
-            else:
-                data_stack.pop()
-                data_stack.append(row)
-    return data_stack
+    start_list = left_bound(month, year, exel_list)
+    end_list =  right_bound(month, year, exel_list, start_list)
+    return [start_list,end_list]
+
+
+def left_bound(month: int, year: int, exel_list):
+    left = 2
+    right = exel_list.max_row
+    while exel_list[right][2].value.month - exel_list[left][2].value.month != 0:
+        if exel_list[left + 1][2].value.month == month and exel_list[left + 1][2].value.day == 1:
+            return left + 1
+        middle = (left + right )//2
+        if exel_list[middle][2].value.month < month:
+            left = middle
+        else:
+            right = middle
+    return left
+
+def right_bound(month: int, year: int, exel_list, start_list: int):
+    left = start_list
+    right = exel_list.max_row - 1
+    while exel_list[right][2].value.month - exel_list[left][2].value.month != 0:
+        if exel_list[left + 1][2].value.month == month + 1 and exel_list[left + 1][2].value.day == 1:
+            return left
+        middle = (left + right )//2
+        if exel_list[middle][2].value.month <= month:
+            left = middle
+        else:
+            right = middle
+    return right
 
 
 def write_category(month: int, year: int, all_category):
@@ -69,7 +87,8 @@ def write_category(month: int, year: int, all_category):
     :param all_category: набор категорий
     :return:
     """
-    book = openpyxl.open("test.xlsx", read_only=False)
+    #book = openpyxl.open("test.xlsx", read_only=False)
+    book = openpyxl.open("C:/Users/apec9/Dropbox/ExelExpenses/test.xlsx", read_only=False)
     list2 = book.worksheets[1]
     begin_category_list_col = 10
     for column in range(begin_category_list_col + 2, list2.max_column):
@@ -78,7 +97,6 @@ def write_category(month: int, year: int, all_category):
     #row = 2
     row = 3
     while row <= list2.max_row + 1 or len(all_category) != 0:
-        print(row)
         for category in all_category.keys():
             leven_length = levenstein(list2[row][begin_category_list_col].value, category)
             if leven_length == 0 or leven_length == 1:
@@ -135,5 +153,5 @@ def levenstein(A, B):
 #print(levenstein('Жкх', 'жкх'))
 
 
-category_counter(6, 2022, True)
+category_counter(7, 2022, True)
 
