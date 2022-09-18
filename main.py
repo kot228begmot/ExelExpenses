@@ -67,11 +67,11 @@ def left_bound(month: int, year: int, exel_list):
     return left
 
 def right_bound(month: int, year: int, exel_list, start_list: int):
-    left = start_list
+    left = start_list #необходимо, чтобы всегда присутствовал первое число месяца
     right = exel_list.max_row - 1
     while exel_list[right][2].value.month - exel_list[left][2].value.month != 0:
         if exel_list[left + 1][2].value.month == month + 1 and exel_list[left + 1][2].value.day == 1:
-            return left
+            return left +1
         middle = (left + right )//2
         if exel_list[middle][2].value.month <= month:
             left = middle
@@ -153,5 +153,4 @@ def levenstein(A, B):
 #print(levenstein('Жкх', 'жкх'))
 
 
-category_counter(7, 2022, True)
-
+category_counter(8, 2022, True)
