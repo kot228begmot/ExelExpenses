@@ -153,4 +153,4 @@ def levenstein(A, B):
 #print(levenstein('Жкх', 'жкх'))
 
 
-category_counter(8, 2022, True)
+category_counter(11, 2022, True)
