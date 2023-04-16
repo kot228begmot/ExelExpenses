@@ -1,4 +1,70 @@
 import openpyxl
+class ExelExpenses:
+    def __init__(self):
+        self. _book = openpyxl.open("C:/Users/apec9/Dropbox/ExelExpenses/test.xlsx", read_only=True)
+        self.list_number = self._book.worksheets[0]
+        self._storage_of_category = {'еда': {},
+                                     'Инвестиции': {},
+                                     'Алкоголь': {},
+                                     'Транспорт': {},
+                                     'Продукты': {},
+                                     'Рестораны': {},
+                                     'Одежда': {},
+                                     'Здоровье, красота, гигиена': {},
+                                     'Кино, театры, музеи, развлечения': {},
+                                     'Связь': {},
+                                     'Квартира': {},
+                                     'Творчество, книги, обучение, спорт': {},
+                                     'Прочее': {}}
+    def expenses_processing(self, month, year):
+        error_positions = []
+        self.find_border_of_the_month(month, year)
+
+
+
+    def find_border_of_the_month(self, month, year):
+        _position_of_start_line = 2
+        _position_of_end_line = self.list_number.max_row
+        _position_of_general_data_column = 2
+        flag_find_year = False
+        start_year_line = 0
+        end_month_line = 0
+        if self.list_number[_position_of_start_line][_position_of_general_data_column].value.year == year:
+            start_year_line = _position_of_start_line
+        else:
+            while flag_find_year == False:
+                if self.list_number[_position_of_start_line][_position_of_general_data_column].value.year == year - 1 and self.list_number[_position_of_start_line+ 1][_position_of_general_data_column].value.year == year:
+                    start_year_line = _position_of_start_line
+                    flag_find_year == True
+                    break
+                middle = (_position_of_start_line + _position_of_end_line) // 2
+                if self.list_number[middle][_position_of_general_data_column].value.year < year:
+                    _position_of_start_line = middle
+                else:
+                    _position_of_end_line = middle
+
+
+
+
+
+
+
+
+
+            """
+            if self.list_number[_position_of_start_list_line + 1][2].value.month == month and self.list_number[_position_of_start_list_line + 1][2].value.day == 1:
+                return _position_of_start_list_line + 1
+            middle = (_position_of_start_list_line + end_of_all_list_line) // 2
+            if exel_list[middle][2].value.month < month:
+                _position_of_start_list_line = middle
+            else:
+                end_of_all_list_line = middle
+        return _position_of_start_list_line
+            """
+
+
+
+
 
 
 def category_counter(month: int, year: int, write_exel: bool = False):
@@ -151,7 +217,9 @@ def levenstein(A, B):
 
 
 #print(levenstein('Жкх', 'жкх'))
+xui = ExelExpenses()
+a = xui.expenses_processing(3, 2022)
 
-a=1
-list_xui = [1,2,3,4,5,6,7,8,9,0]
-category_counter(11, 2022, True)
+
+
+#category_counter(11, 2022, True)
