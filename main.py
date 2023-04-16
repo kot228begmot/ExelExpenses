@@ -18,9 +18,8 @@ class ExelExpenses:
                                      'Прочее': {}}
     def expenses_processing(self, month, year):
         error_positions = []
-        self.find_border_of_the_month(month, year)
-
-
+        start_month_line = self.find_border_of_the_month(month, year)
+        a=1
 
     def find_border_of_the_month(self, month, year):
         _position_of_start_line = 2
@@ -28,39 +27,57 @@ class ExelExpenses:
         _position_of_general_data_column = 2
         flag_find_year = False
         start_year_line = 0
-        end_month_line = 0
+        start_month_line = 0
+
         if self.list_number[_position_of_start_line][_position_of_general_data_column].value.year == year:
             start_year_line = _position_of_start_line
+            flag_find_year = True
         else:
             while flag_find_year == False:
-                if self.list_number[_position_of_start_line][_position_of_general_data_column].value.year == year - 1 and self.list_number[_position_of_start_line+ 1][_position_of_general_data_column].value.year == year:
-                    start_year_line = _position_of_start_line
-                    flag_find_year == True
+                if self.list_number[_position_of_start_line][
+                    _position_of_general_data_column].value.year == year - 1 and \
+                        self.list_number[_position_of_start_line + 1][
+                            _position_of_general_data_column].value.year == year:
+                    start_year_line = _position_of_start_line + 1
+                    flag_find_year = True
                     break
                 middle = (_position_of_start_line + _position_of_end_line) // 2
                 if self.list_number[middle][_position_of_general_data_column].value.year < year:
                     _position_of_start_line = middle
                 else:
                     _position_of_end_line = middle
-
-
-
-
-
-
-
-
-
-            """
-            if self.list_number[_position_of_start_list_line + 1][2].value.month == month and self.list_number[_position_of_start_list_line + 1][2].value.day == 1:
-                return _position_of_start_list_line + 1
-            middle = (_position_of_start_list_line + end_of_all_list_line) // 2
-            if exel_list[middle][2].value.month < month:
-                _position_of_start_list_line = middle
+            flag_find_month = False
+            _position_of_start_line = start_year_line
+            _position_of_end_line = self.list_number.max_row
+            if month == 1:
+                start_month_line = start_year_line
+                flag_find_month = True
             else:
-                end_of_all_list_line = middle
-        return _position_of_start_list_line
-            """
+                while flag_find_month == False:
+                    if (self.list_number[_position_of_start_line][
+                            _position_of_general_data_column].value.month == month - 1 and \
+                        self.list_number[_position_of_start_line + 1][
+                            _position_of_general_data_column].value.month == month) or (
+                            middle == start_year_line and self.list_number[_position_of_start_line - 1][
+                        _position_of_general_data_column].value.month != month):
+                        start_year_line = _position_of_start_line
+                        flag_find_year = True
+                        break
+                    middle = (_position_of_start_line + _position_of_end_line) // 2
+                    if self.list_number[middle][_position_of_general_data_column].value.month < month:
+                        _position_of_start_line = middle
+                    else:
+                        _position_of_end_line = middle
+            return start_year_line
+
+
+
+
+
+
+
+
+
 
 
 
