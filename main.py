@@ -152,5 +152,6 @@ def levenstein(A, B):
 
 #print(levenstein('Жкх', 'жкх'))
 
-
+a=1
+list_xui = [1,2,3,4,5,6,7,8,9,0]
 category_counter(11, 2022, True)
