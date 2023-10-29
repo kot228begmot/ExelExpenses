@@ -3,8 +3,8 @@ import progressbar
 
 
 class ExelExpenses:
-    def __init__(self):
-        self._book = openpyxl.open("C:/Users/apec9/Dropbox/ExelExpenses/test.xlsx", read_only=True)
+    def __init__(self, book_adress):
+        self._book = openpyxl.open(book_adress, read_only=True)
         self.list_number = self._book.worksheets[0]
         self._storage_of_category = {}
 
@@ -12,7 +12,6 @@ class ExelExpenses:
         error_positions = []
         start_end_month_line = self.find_border_of_the_month(month, year)
         self.category_counter(start_end_month_line)
-        a = 1
 
     def find_border_of_the_month(self, month, year):
         _position_of_start_line = 2
@@ -117,5 +116,7 @@ class ExelExpenses:
         print('Контрольная сумма:', sum(summa))
 
 
-source = ExelExpenses()
-a = source.expenses_processing(3, 2023)
+if __name__ == "__main__":
+    exel_path_str = ""
+    source = ExelExpenses(exel_path_str)
+    a = source.expenses_processing(3, 2023)
